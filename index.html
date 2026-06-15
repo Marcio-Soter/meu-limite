@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Limite</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+        input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            font-size: 1.5rem;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background-color: #334155;
+            color: white;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn-principal { background-color: #4f46e5; }
+        .btn-principal:hover { background-color: #4338ca; }
+        
+        .btn-voltar { background-color: #475569; display: none; }
+        .btn-voltar:hover { background-color: #334155; }
+
+        .alerta {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2 style="color: #818cf8; margin-top: 0;">Pacto do Horário Limite</h2>
+        
+        <form id="formLimite" onsubmit="verificarHorario(event)">
+            <label>Que horas são agora?</label>
+            <input type="time" id="hora_atual" required>
+            <button type="submit" class="btn-principal">Verificar Status</button>
+        </form>
+
+        <div id="painelAlerta" class="alerta"></div>
+        
+        <button id="btnVoltar" onclick="voltarTela()" class="btn-voltar">Voltar</button>
+    </div>
+
+    <script>
+        function verificarHorario(event) {
+            event.preventDefault(); 
+            
+            const campoHora = document.getElementById('hora_atual').value;
+            const painel = document.getElementById('painelAlerta');
+            const form = document.getElementById('formLimite');
+            const btnVoltar = document.getElementById('btnVoltar');
+            
+            if (!campoHora) return;
+
+            const partes = campoHora.split(':');
+            const horas = parseInt(partes[0], 10);
+            const minutos = parseInt(partes[1], 10);
+
+            let mensagem = "";
+            let corFundo = "";
+
+            if (horas === 2 && minutos === 0) {
+                mensagem = "Tolerância de horário atingida!";
+                corFundo = "#d97706"; 
+            } 
+            else if ((horas > 2 || (horas === 2 && minutos > 0)) && horas < 12) {
+                mensagem = "Houve descumprimento e violação gravíssima!<br>Passível de quebra de pacto acordado.";
+                corFundo = "#dc2626"; 
+            } 
+            else {
+                mensagem = "Prazo de horário dentro da tolerância exigida!";
+                corFundo = "#16a34a"; 
+            }
+
+            // Esconde o formulário e mostra o resultado com o botão voltar
+            form.style.display = "none";
+            
+            painel.innerHTML = mensagem;
+            painel.style.backgroundColor = corFundo;
+            painel.style.display = "block";
+            
+            btnVoltar.style.display = "block";
+        }
+
+        function voltarTela() {
+            // Reseta a interface para o estado inicial
+            document.getElementById('formLimite').style.display = "block";
+            document.getElementById('painelAlerta').style.display = "none";
+            document.getElementById('btnVoltar').style.display = "none";
+            document.getElementById('hora_atual').value = ""; // Limpa o campo de hora
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
