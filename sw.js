@@ -1,5 +1,6 @@
 const CACHE_NAME = 'v1_limite';
 const ASSETS = [
+  './',
   'index.html',
   'manifest.json'
 ];
